@@ -12,6 +12,9 @@ The source code of this project is freely available for use, modification, and d
 ## Installation and Usage
 - readme.md
 
+## Contribution Inquiries or Additional Information
+- Use the issues board.
+
 ## Detailed License Information
 The full license details for this project can be found in the [LICENSE](LICENSE) file.
 
