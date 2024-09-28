@@ -23,3 +23,8 @@ The full license details for this project can be found in the [LICENSE](LICENSE)
 
 ### Note
 The source code of this project is freely available for use and modification, but when distributing derivative projects, you must credit the original project.
+
+
+For example, if the path is 1*file*C:\A\B\C\D\x_sound1.mp3, only x_sound1 will be displayed as the name on the web.
+The format is number*file*path.
+The file that stores the paths is named audio_file_list.txt.
