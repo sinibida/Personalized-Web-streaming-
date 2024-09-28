@@ -12,9 +12,6 @@ The source code of this project is freely available for use, modification, and d
 ## Installation and Usage
 - readme.md
 
-## Contact
-- Add your contact information here if you have any inquiries regarding the project.
-
 ## Detailed License Information
 The full license details for this project can be found in the [LICENSE](LICENSE) file.
 
