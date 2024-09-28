@@ -4,12 +4,18 @@ Personalized Web streaming(개인화된 웹 스트리밍)
 
 project_root/
 │
+
 ├── templates/
 │   └── index.html
+
 │
+
 ├── app(comment_eng, kr).py   # Python source file with English and Korean comments
+
 ├── audio_file_list           # Text file storing audio paths
+
 ├── README(eng).md            # README file in English
+
 ├── README(kr).md             # README file in Korean
 
 
