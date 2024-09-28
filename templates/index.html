@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Audio Player</title>
+    <script>
+        // JavaScript 재생 목록 관리
+        let audioFiles = {{ audio_files | tojson }};
+        let currentIndex = 0;
+
+        window.onload = () => {
+            const audioElement = document.getElementById('audio-player');
+            const titleElement = document.getElementById('track-title');
+
+            // 첫 번째 곡 정보 설정
+            updateTrackInfo();
+
+            // 다음 곡으로 넘어갈 때 이벤트
+            audioElement.addEventListener('ended', () => {
+                currentIndex++;
+                if (currentIndex >= audioFiles.length) {
+                    currentIndex = 0; // 모든 곡을 재생한 후 첫 번째 곡으로 돌아감
+                }
+                updateTrackInfo();
+                audioElement.play();
+            });
+        };
+
+        function updateTrackInfo() {
+            const audioElement = document.getElementById('audio-player');
+            const titleElement = document.getElementById('track-title');
+
+            const currentTrack = audioFiles[currentIndex];
+            titleElement.textContent = currentTrack.name;
+            audioElement.src = `/audio/${currentTrack.path.split('\\').pop()}`;  // 경로를 URL로 설정
+        }
+    </script>
+</head>
+<body>
+    <h1>Audio Player</h1>
+    <h3 id="track-title"></h3>
+    <audio id="audio-player" controls>
+        <source id="audio-source" src="" type="audio/mp3">
+        Your browser does not support the audio element.
+    </audio>
+</body>
+</html>
