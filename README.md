@@ -13,6 +13,7 @@ project_root/
 ├── README(kr).md             # README file in Korean
 
 
+
 It has a structure like this.
 이런 구조를 하고 있습니다.
 
