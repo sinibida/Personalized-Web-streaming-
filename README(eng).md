@@ -10,10 +10,7 @@ The source code of this project is freely available for use, modification, and d
 2. **Mandatory Disclosure**: If you use the source code of this project to create a derivative project or modified version, you are required to release that project under the GPLv3 license as well, and you must provide the source code along with it.
 
 ## Installation and Usage
-- Include instructions on how to install and use the project in this section.
-
-## Contribution
-- Include instructions on how to contribute to the project in this section.
+- readme.md
 
 ## Contact
 - Add your contact information here if you have any inquiries regarding the project.
