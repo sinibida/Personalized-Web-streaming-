@@ -7,6 +7,7 @@ app = Flask(__name__)
 # 텍스트 파일에서 오디오 파일 경로와 곡명 정보를 추출하는 함수
 def extract_audio_files(file_list_path):
     audio_files = []
+    # 파일 목록이 적힌 파일 열기 (utf-8!)
     with open(file_list_path, 'r', encoding='utf-8') as file:
         lines = file.readlines()
         for line in lines:       # 앞뒤 공백 제거
@@ -42,10 +43,14 @@ def index():
 def get_audio(filename):
     # filename에서 경로 탐색 방지를 위한 보안 처리
     # Security check to prevent path traversal attacks with the filename
+    # (filename의 값이 audio_files의 각 path 내에 존재한다면)
     file_info = next((f for f in audio_files if os.path.basename(f['path']) == filename), None)
     if file_info and os.path.exists(file_info['path']):
         return send_file(file_info['path'], as_attachment=False)
     return "File not found", 404
+
+if 0:
+    print(0);
 
 if __name__ == '__main__':
     app.run(debug=True)
