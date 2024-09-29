@@ -7,9 +7,11 @@
     <title>Audio Player</title>
     <script>
         // JavaScript 재생 목록 관리
+        // !: tojson: Flask로 들어간 매개변수를 json으로 표현하기 위한 Middleware(?).
         let audioFiles = {{ audio_files | tojson }};
         let currentIndex = 0;
 
+        // 로드 완료 시
         window.onload = () => {
             const audioElement = document.getElementById('audio-player');
             const titleElement = document.getElementById('track-title');
