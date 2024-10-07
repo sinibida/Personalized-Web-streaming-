@@ -58,7 +58,7 @@ def terminate_inactive_processes():
 cleanup_thread = threading.Thread(target=terminate_inactive_processes, daemon=True)
 cleanup_thread.start()
 
-file_list_path = r"C:\vscode\개인 프로젝트3\audio_file_list.txt"
+file_list_path = r"audio_file_list.txt"
 audio_files = extract_audio_files(file_list_path)
 shuffled_audio_files = copy.deepcopy(audio_files)
 random.shuffle(shuffled_audio_files)
