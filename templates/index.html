@@ -1,49 +1,101 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audio Player</title>
+    <title>Simple Audio Player</title>
     <script>
-        // JavaScript 재생 목록 관리
-        let audioFiles = {{ audio_files | tojson }};
-        let currentIndex = 0;
+        let audioFiles = {{ audio_files|tojson|safe }}; // JSON 형식으로 audio_files 가져옴
+        let currentIndex = 0; // 현재 트랙 인덱스
 
-        window.onload = () => {
-            const audioElement = document.getElementById('audio-player');
-            const titleElement = document.getElementById('track-title');
-
-            // 첫 번째 곡 정보 설정
-            updateTrackInfo();
-
-            // 다음 곡으로 넘어갈 때 이벤트
-            audioElement.addEventListener('ended', () => {
-                currentIndex++;
-                if (currentIndex >= audioFiles.length) {
-                    currentIndex = 0; // 모든 곡을 재생한 후 첫 번째 곡으로 돌아감
-                }
-                updateTrackInfo();
-                audioElement.play();
-            });
-        };
-
+        // 트랙 정보 업데이트
         function updateTrackInfo() {
             const audioElement = document.getElementById('audio-player');
             const titleElement = document.getElementById('track-title');
-
+            const coverElement = document.getElementById('album-cover');
             const currentTrack = audioFiles[currentIndex];
-            titleElement.textContent = currentTrack.name;
-            audioElement.src = `/audio/${currentTrack.path.split('\\').pop()}`;  // 경로를 URL로 설정
+            const originalPath = currentTrack.path.replace(/\\/g, '/').split('/').pop();
+            const trackName = originalPath.replace(/\.[^/.]+$/, ""); // 확장자 제거
+
+            titleElement.textContent = trackName;
+            const encodedFilename = encodeURIComponent(originalPath);
+
+            audioElement.src = `/audio/${encodedFilename}`;
+            coverElement.src = `/cover/${encodedFilename}`;
+            coverElement.onerror = () => {
+                coverElement.src = "default_cover.png"; // 기본 커버 이미지 경로 설정
+                coverElement.onerror = null;
+            };
+            audioElement.load();
+
+            // Android 메서드 호출 - 오디오 전송
+            if (window.Android) {
+                window.Android.updateTrackInfo(trackName, coverElement.src);
+                window.Android.transferAudioData(originalPath);
+
+                // 재생이 끝나면 Android 메서드를 호출하여 다음 곡으로 넘기기
+                document.getElementById('audio-player').addEventListener('ended', function() {
+                    currentIndex = (currentIndex + 1) % audioFiles.length; // 순환하여 다음 곡으로 이동
+                    updateTrackInfo();
+                    window.Android.updateTrackInfo(trackName, coverElement.src);
+                    window.Android.transferAudioData(originalPath);
+                    audioElement.play();
+            });
         }
+    }
+
+        // 다음 트랙
+        function nextTrack() {
+            currentIndex = (currentIndex + 1) % audioFiles.length; // 순환하도록 설정
+            updateTrackInfo();
+            playAudio();
+        }
+
+        // 이전 트랙
+        function previousTrack() {
+            currentIndex = (currentIndex - 1 + audioFiles.length) % audioFiles.length; // 순환하도록 설정
+            updateTrackInfo();
+            playAudio();
+        }
+
+        // 오디오 재생
+        function playAudio() {
+            const audioElement = document.getElementById('audio-player');
+            audioElement.play().catch(error => {
+                console.log("Playback failed due to user interaction requirements. Error: ", error);
+            });
+        }
+
+        // 오디오 재생 중단
+        function stopAudio() {
+            const audioElement = document.getElementById('audio-player');
+            audioElement.pause();
+            audioElement.currentTime = 0;
+        }
+
+        window.onload = function() {
+            const audioElement = document.getElementById('audio-player');
+            audioElement.addEventListener('ended', nextTrack);
+            updateTrackInfo();
+            playAudio(); // 첫 트랙 자동 재생
+        };
     </script>
 </head>
+
 <body>
-    <h1>Audio Player</h1>
+    <h1>Simple Audio Player</h1>
     <h3 id="track-title"></h3>
+    <img id="album-cover" src="default_cover.png" alt="Album Cover" width="300" height="300" />
     <audio id="audio-player" controls>
-        <source id="audio-source" src="" type="audio/mp3">
+        <source id="audio-source" src="" type="audio/flac">
         Your browser does not support the audio element.
     </audio>
+    
+    <button onclick="previousTrack()">Previous Track</button>
+    <button onclick="stopAudio()">Stop</button>
+    <button onclick="nextTrack()">Next Track</button>
 </body>
+
 </html>
