@@ -5,7 +5,8 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Audio Player with Effects</title>
+    <title>Audio Player</title>
+    <link rel="stylesheet" href="/static/index.css">
     <script>
         let audioFiles = {{ audio_files|tojson|safe }}; // JSON 형식으로 audio_files 가져옴
         let currentIndex = 0; // 현재 트랙 인덱스
@@ -123,21 +124,27 @@
 </head>
 
 <body>
-    <h1>Audio Player with Effects</h1>
-    <h3 id="track-title"></h3>
-    <img id="album-cover" src="default_cover.png" alt="Album Cover" width="300" height="300" />
-
-    <h4>Select Effects:</h4>
-    <label><input type="checkbox" name="effects" value="echo"> Echo</label><br>
-    <label><input type="checkbox" name="effects" value="reverb"> Reverb</label><br>
-
-    <audio id="audio-player" controls>
-        <source id="audio-source" src="" type="audio/flac">
-        Your browser does not support the audio element.
-    </audio>
-    
-    <button onclick="previousTrack()">Previous Track</button>
-    <button onclick="nextTrack()">Next Track</button>
+    <div class="title"><h1>Audio Player with Effects</h1></div>
+    <div class="content">
+        <div class="player">
+            <h3 id="track-title"></h3>
+            <img id="album-cover" src="default_cover.png" alt="Album Cover" width="300" height="300" />
+            <div class="special-controls">
+                <h4>Select Effects:</h4>
+                <label><input type="checkbox" name="effects" value="echo"> Echo</label><br>
+                <label><input type="checkbox" name="effects" value="reverb"> Reverb</label><br>
+            </div>
+            <audio id="audio-player" controls>
+                <source id="audio-source" src="" type="audio/flac">
+                Your browser does not support the audio element.
+            </audio>
+        </div>
+        
+        <div class="buttons">
+            <button onclick="previousTrack()">Previous Track</button>
+            <button onclick="nextTrack()">Next Track</button>
+        </div>
+    </div>
 </body>
 
 </html>
