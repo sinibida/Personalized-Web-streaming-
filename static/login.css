@@ -77,3 +77,11 @@ button {
   border-color: #444444;
   border-style: solid;
 }
+
+@media (max-width: 600px) {
+  .container {
+    align-self: stretch;
+    margin: 0px 32px;
+    width: auto;
+  }
+}
