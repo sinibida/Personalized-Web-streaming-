@@ -3,17 +3,17 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="/static/login.css">
     <title>로그인</title>
 </head>
 <body>
-    <h1>로그인</h1>
-    <form method="POST">
+  <div class="container">
+    <h1 class="login-title">로그인</h1>
+    <form method="POST" class="login-form">
         <label for="username">사용자 이름:</label>
         <input type="text" name="username" required>
-        <br>
         <label for="password">비밀번호:</label>
         <input type="password" name="password" required>
-        <br>
         <button type="submit">로그인</button>
     </form>
     {% with messages = get_flashed_messages() %}
@@ -25,5 +25,6 @@
         </ul>
       {% endif %}
     {% endwith %}
+  </div>
 </body>
 </html>
