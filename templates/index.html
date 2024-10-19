@@ -5,10 +5,22 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Simple Audio Player</title>
+    <title>Audio Player with Effects</title>
     <script>
         let audioFiles = {{ audio_files|tojson|safe }}; // JSON 형식으로 audio_files 가져옴
         let currentIndex = 0; // 현재 트랙 인덱스
+        let audioContext; // 오디오 컨텍스트
+        let analyser; // 오디오 분석기
+
+        // 배열을 섞는 함수
+        function shuffleArray(array) {
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+        }
+
+        shuffleArray(audioFiles); // audioFiles 배열 섞기
 
         // 트랙 정보 업데이트
         function updateTrackInfo() {
@@ -20,14 +32,18 @@
             const trackName = originalPath.replace(/\.[^/.]+$/, ""); // 확장자 제거
 
             titleElement.textContent = trackName;
+
+            const selectedEffects = getSelectedEffects();
             const encodedFilename = encodeURIComponent(originalPath);
 
-            audioElement.src = `/audio/${encodedFilename}`;
+            audioElement.src = `/audio/${encodedFilename}?effects=${selectedEffects}`;
             coverElement.src = `/cover/${encodedFilename}`;
+
             coverElement.onerror = () => {
-                coverElement.src = "default_cover.png"; // 기본 커버 이미지 경로 설정
+                coverElement.src = "/public/none";
                 coverElement.onerror = null;
             };
+
             audioElement.load();
 
             // Android 메서드 호출 - 오디오 전송
@@ -41,60 +57,86 @@
                     updateTrackInfo();
                     window.Android.updateTrackInfo(trackName, coverElement.src);
                     window.Android.transferAudioData(originalPath);
-                    audioElement.play();
+                    playAudio();
             });
         }
-    }
+        }
+
+        // 선택된 효과 가져오기
+        function getSelectedEffects() {
+            const effects = [];
+            document.querySelectorAll('input[name="effects"]:checked').forEach((checkbox) => {
+                effects.push(checkbox.value);
+            });
+            return effects.join(',');
+        }
 
         // 다음 트랙
         function nextTrack() {
-            currentIndex = (currentIndex + 1) % audioFiles.length; // 순환하도록 설정
+            currentIndex++;
+            if (currentIndex >= audioFiles.length) {
+                currentIndex = 0;
+            }
             updateTrackInfo();
-            playAudio();
-        }
-
-        // 이전 트랙
-        function previousTrack() {
-            currentIndex = (currentIndex - 1 + audioFiles.length) % audioFiles.length; // 순환하도록 설정
-            updateTrackInfo();
-            playAudio();
-        }
-
-        // 오디오 재생
-        function playAudio() {
             const audioElement = document.getElementById('audio-player');
+            audioElement.currentTime = 0;
+
             audioElement.play().catch(error => {
                 console.log("Playback failed due to user interaction requirements. Error: ", error);
             });
         }
 
-        // 오디오 재생 중단
-        function stopAudio() {
+        // 이전 트랙
+        function previousTrack() {
+            currentIndex--;
+            if (currentIndex < 0) {
+                currentIndex = audioFiles.length - 1;
+            }
+            updateTrackInfo();
             const audioElement = document.getElementById('audio-player');
-            audioElement.pause();
             audioElement.currentTime = 0;
+
+            audioElement.play().catch(error => {
+                console.log("Playback failed due to user interaction requirements. Error: ", error);
+            });
         }
 
         window.onload = function() {
             const audioElement = document.getElementById('audio-player');
-            audioElement.addEventListener('ended', nextTrack);
-            updateTrackInfo();
-            playAudio(); // 첫 트랙 자동 재생
+
+            audioElement.addEventListener('stalled', () => {
+                console.log("Audio playback stalled, moving to next track after 3 seconds.");
+                setTimeout(() => {
+                    nextTrack();
+                }, 3000);
+            });
+
+            audioElement.addEventListener('playing', () => {
+                console.log("Audio playback resumed.");
+            });
+
+            audioElement.addEventListener('ended', () => {
+                nextTrack();
+            });
         };
     </script>
 </head>
 
 <body>
-    <h1>Simple Audio Player</h1>
+    <h1>Audio Player with Effects</h1>
     <h3 id="track-title"></h3>
     <img id="album-cover" src="default_cover.png" alt="Album Cover" width="300" height="300" />
+
+    <h4>Select Effects:</h4>
+    <label><input type="checkbox" name="effects" value="echo"> Echo</label><br>
+    <label><input type="checkbox" name="effects" value="reverb"> Reverb</label><br>
+
     <audio id="audio-player" controls>
         <source id="audio-source" src="" type="audio/flac">
         Your browser does not support the audio element.
     </audio>
     
     <button onclick="previousTrack()">Previous Track</button>
-    <button onclick="stopAudio()">Stop</button>
     <button onclick="nextTrack()">Next Track</button>
 </body>
 
