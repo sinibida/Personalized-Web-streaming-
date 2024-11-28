@@ -41,7 +41,7 @@ audio_file_list <-- 이 파일에 오디오의 경로를 넣어야 하는데,
 You need to add audio paths to the audio_file_list.
 
 `1*file*C:\A\B\C\D\x_sound1.mp3`
-형식은 숫자*file*경로입니다. 
+형식은 `숫자*file*경로` 입니다. 
 
 the format should be `number*file*path`. On the web
 
