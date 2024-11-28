@@ -102,8 +102,20 @@
             });
         }
 
+        function setTrack(index) {
+            currentIndex = index
+            updateTrackInfo();
+            const audioElement = document.getElementById('audio-player');
+            audioElement.currentTime = 0;
+
+            audioElement.play().catch(error => {
+                console.log("Playback failed due to user interaction requirements. Error: ", error);
+            });
+        }
+
         window.onload = function() {
             const audioElement = document.getElementById('audio-player');
+            setTrack(0);
 
             audioElement.addEventListener('stalled', () => {
                 console.log("Audio playback stalled, moving to next track after 3 seconds.");
@@ -119,30 +131,47 @@
             audioElement.addEventListener('ended', () => {
                 nextTrack();
             });
+
+            const sidebar = document.querySelector(".sidebar-content");
+            audioFiles.forEach((audio, i) => {
+                const div = document.createElement('div');
+                div.onclick = () => {
+                    setTrack(i);
+                }
+                div.textContent = audio.name;
+                div.className = "sidebar-track";
+                sidebar.appendChild(div);
+            })
         };
     </script>
 </head>
 
 <body>
     <div class="title"><h1>Audio Player with Effects</h1></div>
-    <div class="content">
-        <div class="player">
-            <h3 id="track-title"></h3>
-            <img id="album-cover" src="default_cover.png" alt="Album Cover" width="300" height="300" />
-            <div class="special-controls">
-                <h4>Select Effects:</h4>
-                <label><input type="checkbox" name="effects" value="echo"> Echo</label><br>
-                <label><input type="checkbox" name="effects" value="reverb"> Reverb</label><br>
+    <div class="main">
+        <div class="content">
+            <div class="player">
+                <h3 id="track-title"></h3>
+                <img id="album-cover" src="default_cover.png" alt="Album Cover" width="300" height="300" />
+                <div class="special-controls">
+                    <h4>Select Effects:</h4>
+                    <label><input type="checkbox" name="effects" value="echo"> Echo</label><br>
+                    <label><input type="checkbox" name="effects" value="reverb"> Reverb</label><br>
+                </div>
+                <audio id="audio-player" controls>
+                    <source id="audio-source" src="" type="audio/flac">
+                    Your browser does not support the audio element.
+                </audio>
             </div>
-            <audio id="audio-player" controls>
-                <source id="audio-source" src="" type="audio/flac">
-                Your browser does not support the audio element.
-            </audio>
-        </div>
         
-        <div class="buttons">
-            <button onclick="previousTrack()">Previous Track</button>
-            <button onclick="nextTrack()">Next Track</button>
+            <div class="buttons">
+                <button onclick="previousTrack()">Previous Track</button>
+                <button onclick="nextTrack()">Next Track</button>
+            </div>
+        </div>
+        <div class="sidebar">
+            <div class="sidebar-content">
+            </div>
         </div>
     </div>
 </body>
