@@ -12,7 +12,8 @@ import urllib.parse
 from multiprocessing import Queue, Process
 import concurrent.futures
 app = Flask(__name__)
-app.secret_key = "qwyueyqwhuidhuwi@#&(*&!&@#*(HNCDLKJNCLK:SS!@#(*&(*!%*!@))))"  # 세션을 사용하기 위한 비밀 키 설정
+app.secret_key = "qwyueyqwhuidhuwi@#&(*&!&@#*(HNCDLKJNCLK:SS!@#(*&(*!%*!@))))"  # 세션을 사용하기 위한 비밀 키 설정 에시임. 분명하게 바꾸어주어야 함. 아무도 모르는 값으로
+#이 시크릿 키는 아무도 모르는것이 자명함으로 마구 설정해도 무방.
 # 스레드 풀 생성 (최대 10개의 스레드 사용)
 executor = concurrent.futures.ThreadPoolExecutor(max_workers=10)
 # 현재 접속자 수를 추적하기 위한 변수와 락 설정
@@ -71,7 +72,7 @@ def extract_audio_files(file_list_path):
 
 
 
-file_list_path = r"/Users/sinibida/mydoc/personalized-web-streaming/audio_file_list.txt"
+file_list_path = r "./audio_file_list.txt"
 audio_files = extract_audio_files(file_list_path)
 # 서버에서 재생 목록을 랜덤하게 섞음
 shuffled_audio_files = copy.deepcopy(audio_files)
@@ -113,7 +114,7 @@ def extract_album_cover(file_path):
             album_cover = audio.pictures[0].data
         else:
             print("앨범 커버를 찾을 수 없습니다2.")
-            image = Image.open(r"/Users/sinibida/mydoc/personalized-web-streaming/none.png")
+            image = Image.open(r"./none.png")
             image_byte_array = image.save(io.BytesIO(), format="PNG")
             image.save(image_byte_array, format="PNG")
             image_byte_array.seek(0)
@@ -131,7 +132,7 @@ def extract_album_cover(file_path):
 
 @app.route("/public/none")
 def error_album_cover():
-    image = Image.open(r"/Users/sinibida/mydoc/personalized-web-streaming/none.png")
+    image = Image.open(r"./none.png")
     image_byte_array = image.save(io.BytesIO(), format="PNG")
     image.save(image_byte_array, format="PNG")
     image_byte_array.seek(0)
@@ -328,10 +329,8 @@ def stream_audio(filename):
     return "File not found", 404
 
 
-
-
-
-
+app.config['SESSION_COOKIE_SECURE'] = True
+app.config['SESSION_COOKIE_HTTPONLY'] = True
 
 if __name__ == "__main__":
     heartbeat_thread = threading.Thread(target=heartbeat_checker)
