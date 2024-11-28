@@ -329,10 +329,8 @@ def stream_audio(filename):
     return "File not found", 404
 
 
-
-
-
-
+app.config['SESSION_COOKIE_SECURE'] = True
+app.config['SESSION_COOKIE_HTTPONLY'] = True
 
 if __name__ == "__main__":
     heartbeat_thread = threading.Thread(target=heartbeat_checker)
