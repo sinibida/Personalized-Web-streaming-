@@ -72,7 +72,7 @@ def extract_audio_files(file_list_path):
 
 
 
-file_list_path = r"/Users/sinibida/mydoc/personalized-web-streaming/audio_file_list.txt"
+file_list_path = r "./audio_file_list.txt"
 audio_files = extract_audio_files(file_list_path)
 # 서버에서 재생 목록을 랜덤하게 섞음
 shuffled_audio_files = copy.deepcopy(audio_files)
@@ -114,7 +114,7 @@ def extract_album_cover(file_path):
             album_cover = audio.pictures[0].data
         else:
             print("앨범 커버를 찾을 수 없습니다2.")
-            image = Image.open(r"/Users/sinibida/mydoc/personalized-web-streaming/none.png")
+            image = Image.open(r"./none.png")
             image_byte_array = image.save(io.BytesIO(), format="PNG")
             image.save(image_byte_array, format="PNG")
             image_byte_array.seek(0)
@@ -132,7 +132,7 @@ def extract_album_cover(file_path):
 
 @app.route("/public/none")
 def error_album_cover():
-    image = Image.open(r"/Users/sinibida/mydoc/personalized-web-streaming/none.png")
+    image = Image.open(r"./none.png")
     image_byte_array = image.save(io.BytesIO(), format="PNG")
     image.save(image_byte_array, format="PNG")
     image_byte_array.seek(0)
