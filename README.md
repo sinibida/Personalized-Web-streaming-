@@ -61,6 +61,6 @@ activity_main.xml, AndroidManifest.xml, MainActivity.java 파일은 오디오 by
 
 The activity_main.xml, AndroidManifest.xml, and MainActivity.java files show examples of audio bypass. If you wish, you can include the jflac library in your Android Studio project and use it as an app.
 
-gnu라이센스라 ffempg를 프로젝트에 포함 하는 것이 애매합니다. 각각 플랫폼에서 설치 후 사용하시면 됩니다.
+모든 플랫폼에서 사용하기를 바라기 때문에 ffempg는 첨부하지 않았습니다. 따라서 ffempg를 아래의 링크에서 설치 후 사용해주시기를 바랍니다.
 https://ffmpeg.org/
 여기서 다운로드 가능합니다.
