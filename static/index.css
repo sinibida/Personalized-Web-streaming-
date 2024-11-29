@@ -96,6 +96,7 @@ button {
 .sidebar-track {
   border-bottom: solid 1px #444444;
   padding: 4px 8px;
+  word-break: break-word;
 
   &:hover {
     background-color: #222222;
