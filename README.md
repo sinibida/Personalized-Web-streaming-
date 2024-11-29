@@ -69,3 +69,10 @@ https://ffmpeg.org/
 요청이 많다면 조만간 윈도우 전용 브랜치를 하나 만들어 ffmpeg.exe를 추가한 브랜치를 하나 만들도록 하겠습니다.
 
 reader.py 를 실행하면 해당 디렉토리가 생성되고, 그 디렉토리에 음원파일을 넣은 후 다시 reader.py를 실행하면 쉽게 오디오 파일 리스트를 추가할 수 있습니다.
+
+## Third-Party Libraries
+
+This project uses the following third-party library:
+
+- **[JFLAC](https://sourceforge.net/projects/jflac/)**: A Java library for FLAC decoding, licensed under the Apache License 2.0.  
+  For more details, see [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0).
