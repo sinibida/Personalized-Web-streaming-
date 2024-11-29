@@ -24,3 +24,11 @@
 예를 들어 경로가 1*file*C:\A\B\C\D\x_sound1.mp3인 경우, 웹에서는 x_sound1이라는 이름만 표시됩니다. 
 형식은 숫자*file*경로입니다. 
 경로를 저장하는 파일의 이름은 audio_file_list.txt입니다.
+
+
+## Third-Party Libraries
+
+This project uses the following third-party library:
+
+- **[JFLAC](https://sourceforge.net/projects/jflac/)**: A Java library for FLAC decoding, licensed under the Apache License 2.0.  
+  For more details, see [Apache License 2.0](http://www.apache.org/licenses/LICENSE-2.0).
