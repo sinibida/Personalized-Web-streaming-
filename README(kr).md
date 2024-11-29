@@ -25,6 +25,7 @@
 형식은 숫자*file*경로입니다. 
 경로를 저장하는 파일의 이름은 audio_file_list.txt입니다.
 
+"도메인이 HTTPS를 지원하고 그렇게 설정되어 있다면, **https://**로 시작하는 주소 형식(예: https://example.com)을 사용하세요. 그렇지 않은 경우 프로토콜 없이 주소만 입력하셔도 됩니다(예: example.com). Aoudio 앱이 자동으로 ｈｔｔｐ로 처리합니다."
 
 ## Third-Party Libraries
 
