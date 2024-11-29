@@ -72,7 +72,7 @@ def extract_audio_files(file_list_path):
 
 
 
-file_list_path = r "./audio_file_list.txt"
+file_list_path = r"./audio_file_list.txt"
 audio_files = extract_audio_files(file_list_path)
 # 서버에서 재생 목록을 랜덤하게 섞음
 shuffled_audio_files = copy.deepcopy(audio_files)
