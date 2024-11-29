@@ -25,3 +25,5 @@ The source code of this project is freely available for use and modification, bu
 For example, if the path is 1*file*C:\A\B\C\D\x_sound1.mp3, only x_sound1 will be displayed as the name on the web.
 The format is number*file*path.
 The file that stores the paths is named audio_file_list.txt.
+
+"If your domain supports HTTPS and is set up accordingly, please use the address format starting with https:// (e.g., https://example.com). Otherwise, you can simply enter the address without specifying a protocol (e.g., example.com), and the Aoudio app will ｈｔｔｐ handle iｔ
