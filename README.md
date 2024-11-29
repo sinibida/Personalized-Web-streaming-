@@ -72,6 +72,10 @@ reader.py 를 실행하면 해당 디렉토리가 생성되고, 그 디렉토리
 
 그리고 여러분의 기여도 받고 있습니다¡ 기여자가 되어보세요¡
 
+ａｏｕｄｉｏ（오타지만 그냥 두기로 함。）앱의 사용지침입니다。
+"도메인이 HTTPS를 지원하고 그렇게 설정되어 있다면, **https://**로 시작하는 주소 형식(예: https://example.com)을 사용하세요. 그렇지 않은 경우 프로토콜 없이 주소만 입력하셔도 됩니다(예: example.com). Aoudio 앱이 자동으로 ｈｔｔｐ로 처리합니다."
+
+
 ## Third-Party Libraries
 
 This project uses the following third-party library:
