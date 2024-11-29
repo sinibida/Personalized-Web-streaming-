@@ -1,3 +1,4 @@
+#https://github.com/SION001122/Personalized-Web-streaming-/issues/3 여기서 공여받음.
 import os
 base_path = os.path.dirname(os.path.abspath(__file__))
 audio_folder = os.path.join(base_path, 'audio')
