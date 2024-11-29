@@ -27,3 +27,9 @@ The format is number*file*path.
 The file that stores the paths is named audio_file_list.txt.
 
 "If your domain supports HTTPS and is set up accordingly, please use the address format starting with https:// (e.g., https://example.com). Otherwise, you can simply enter the address without specifying a protocol (e.g., example.com), and the Aoudio app will ｈｔｔｐ handle iｔ
+
+제3자 라이브러리
+이 프로젝트는 다음과 같은 타사 라이브러리를 사용합니다.
+
+JFLAC: Apache License 2.0에 따라 라이센스가 부여된 FLAC 디코딩용 Java 라이브러리입니다.
+자세한 내용은 Apache License 2.0을 참조하십시오.
