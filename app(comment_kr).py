@@ -279,29 +279,18 @@ def stream_audio(filename):
 
             # 확장자에 따른 FFmpeg 명령어 설정
             if file_extension == '.aiff':
-                command = ['ffmpeg', '-i', file_path, '-map', '0:a', '-f', 'flac', '-c:a', 'flac', '-sample_fmt', 's32', '-threads', '4', '-']
+                command = ['ffmpeg', '-i', file_path, '-map', '0:a', '-f', 'flac', '-c:a', 'flac', '-sample_fmt', 's32', '-threads', '4']
             elif file_extension in ['.dsf', '.dff']:
-                command = ['ffmpeg', '-i', file_path, '-map', '0:a', '-f', 'flac', '-ar', '352800', '-c:a', 'flac', '-sample_fmt', 's32', '-threads', '4', '-']
+                command = ['ffmpeg', '-i', file_path, '-map', '0:a', '-f', 'flac', '-ar', '352800', '-c:a', 'flac', '-sample_fmt', 's32', '-threads', '4']
             elif file_extension == '.wav':
-                command = ['ffmpeg', '-i', file_path, '-map', '0:a', '-f', 'flac', '-c:a', 'flac', '-threads', '4', '-']
+                command = ['ffmpeg', '-i', file_path, '-map', '0:a', '-f', 'flac', '-c:a', 'flac', '-threads', '4']
             elif file_extension == '.flac':
-                command = ['ffmpeg', '-i', file_path, '-map', '0:a', '-f', 'flac', '-c:a', 'flac', '-threads', '4', '-']
+                command = ['ffmpeg', '-i', file_path, '-map', '0:a', '-f', 'flac', '-c:a', 'flac', '-threads', '4']
             elif file_extension == '.mp3':
-                command = ['ffmpeg', '-i', file_path, '-map', '0:a', '-f', 'flac', '-c:a', 'flac', '-sample_fmt', 's16', '-threads', '4', '-']
-            elif file_extension == '.aac':
-                command = ['ffmpeg', '-i', file_path, '-map', '0:a', '-f', 'flac', '-c:a', 'flac', '-threads', '4', '-']
-            elif file_extension == '.ogg':
-                command = ['ffmpeg', '-i', file_path, '-map', '0:a', '-f', 'flac', '-c:a', 'flac', '-threads', '4', '-']
-            elif file_extension == '.wma':
-                command = ['ffmpeg', '-i', file_path, '-map', '0:a', '-f', 'flac', '-c:a', 'flac', '-threads', '4', '-']
-            elif file_extension == '.alac':
-                command = ['ffmpeg', '-i', file_path, '-map', '0:a', '-f', 'flac', '-c:a', 'flac', '-threads', '4', '-']
-            elif file_extension == '.m4a':
-                command = ['ffmpeg', '-i', file_path, '-map', '0:a', '-f', 'flac', '-c:a', 'flac', '-threads', '4', '-']
-            elif file_extension == '.opus':
-                command = ['ffmpeg', '-i', file_path, '-map', '0:a', '-f', 'flac', '-c:a', 'flac', '-threads', '4', '-']
+                command = ['ffmpeg', '-i', file_path, '-map', '0:a', '-f', 'flac', '-c:a', 'flac', '-sample_fmt', 's16', '-threads', '4']
+                        # 음장 효과 필터가 있을 경우 명령어에 필터 추가
             else:
-                return "Unsupported file type for audio streaming", 415  # 415: Unsupported Media Type
+                command = ['ffmpeg', '-i', file_path, '-map', '0:a', '-f', 'flac', '-c:a', 'flac', '-threads', '4']
                 
             # FFmpeg 프로세스를 stdout으로 실행
             current_process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
