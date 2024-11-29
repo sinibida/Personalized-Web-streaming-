@@ -655,6 +655,11 @@ of the code.  There are many ways you could offer source, and different
 solutions will be better for different programs; see section 13 for the
 specific requirements.
 
+This project includes JFLAC, a Java library for FLAC decoding, which is licensed under the Apache License 2.0.
+
+You may obtain a copy of the Apache License 2.0 at:
+http://www.apache.org/licenses/LICENSE-2.0
+
   You should also get your employer (if you work as a programmer) or school,
 if any, to sign a "copyright disclaimer" for the program, if necessary.
 For more information on this, and how to apply and follow the GNU AGPL, see
