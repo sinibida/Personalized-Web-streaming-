@@ -288,6 +288,18 @@ def stream_audio(filename):
                 command = ['ffmpeg', '-i', file_path, '-map', '0:a', '-f', 'flac', '-c:a', 'flac', '-threads', '4', '-']
             elif file_extension == '.mp3':
                 command = ['ffmpeg', '-i', file_path, '-map', '0:a', '-f', 'flac', '-c:a', 'flac', '-sample_fmt', 's16', '-threads', '4', '-']
+            elif file_extension == '.aac':
+                command = ['ffmpeg', '-i', file_path, '-map', '0:a', '-f', 'flac', '-c:a', 'flac', '-threads', '4', '-']
+            elif file_extension == '.ogg':
+                command = ['ffmpeg', '-i', file_path, '-map', '0:a', '-f', 'flac', '-c:a', 'flac', '-threads', '4', '-']
+            elif file_extension == '.wma':
+                command = ['ffmpeg', '-i', file_path, '-map', '0:a', '-f', 'flac', '-c:a', 'flac', '-threads', '4', '-']
+            elif file_extension == '.alac':
+                command = ['ffmpeg', '-i', file_path, '-map', '0:a', '-f', 'flac', '-c:a', 'flac', '-threads', '4', '-']
+            elif file_extension == '.m4a':
+                command = ['ffmpeg', '-i', file_path, '-map', '0:a', '-f', 'flac', '-c:a', 'flac', '-threads', '4', '-']
+            elif file_extension == '.opus':
+                command = ['ffmpeg', '-i', file_path, '-map', '0:a', '-f', 'flac', '-c:a', 'flac', '-threads', '4', '-']
             else:
                 return "Unsupported file type for audio streaming", 415  # 415: Unsupported Media Type
                 
