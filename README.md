@@ -70,6 +70,8 @@ https://ffmpeg.org/
 
 reader.py 를 실행하면 해당 디렉토리가 생성되고, 그 디렉토리에 음원파일을 넣은 후 다시 reader.py를 실행하면 쉽게 오디오 파일 리스트를 추가할 수 있습니다.
 
+그리고 여러분의 기여도 받고 있습니다¡ 기여자가 되어보세요¡
+
 ## Third-Party Libraries
 
 This project uses the following third-party library:
