@@ -6,8 +6,8 @@ output_file = os.path.join(base_path, 'audio_file_list.txt')
 
 try:
     if not os.path.exists(audio_folder):
-        print(f"폴더가 존재하지 않습니다: {audio_folder}")
-        exit()
+        os.makedirs(audio_folder)
+        print(f"폴더가 존재하지 않아 생성되었습니다.: {audio_folder}")
 
     files = os.listdir(audio_folder)
     lines = []
