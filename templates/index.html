@@ -55,16 +55,6 @@
                     androidplaynexttrack();
                 }
             };
-
-            // 곡이 완전히 종료되었을 때 처리
-            audioElement.onended = function () {
-                if (!nextTrackCalled) {
-                    nextTrackCalled = true;
-                    console.log("Audio ended. Calling androidplaynexttrack...");
-                    androidplaynexttrack();
-                }
-            };
-
             // 페이지 로드 시 첫 트랙 자동 재생
             audioElement.play()
                 .then(() => {
