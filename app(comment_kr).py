@@ -11,6 +11,7 @@ import os
 import urllib.parse
 from multiprocessing import Queue, Process
 import concurrent.futures
+import sts
 app = Flask(__name__)
 app.secret_key = "qwyueyqwhuidhuwi@#&(*&!&@#*(HNCDLKJNCLK:SS!@#(*&(*!%*!@))))"  # 세션을 사용하기 위한 비밀 키 설정 에시임. 분명하게 바꾸어주어야 함. 아무도 모르는 값으로
 #이 시크릿 키는 아무도 모르는것이 자명함으로 마구 설정해도 무방.
@@ -217,7 +218,7 @@ current_process = None
 import threading
 import time
 
-max_processes = 80  # 최대 실행 가능한 프로세스 수
+max_processes = sys.maxsize  # 최대 실행 가능한 프로세스 수
 process_list = []  # 프로세스 목록: [(process, last_access_time)]
 
 process_list_lock = threading.Lock()
