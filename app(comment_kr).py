@@ -259,7 +259,7 @@ def terminate_inactive_processes_with_duration():
                         continue
 
                     # 프로세스가 재생 시간 + 0.5초를 초과했는지 확인
-                    if current_time - last_access > file_duration + 0.5 and proc.poll() is None:
+                    if current_time - last_access >= file_duration and proc.poll() is None: # 끝나면 종료
                         proc.terminate()
                         try:
                             proc.wait(timeout=1)  # 1초 대기 후 종료 확인
@@ -275,7 +275,7 @@ def terminate_inactive_processes_with_duration():
                             process_list.remove((proc, last_access))  # 정상적으로 종료된 경우 리스트에서 제거
                 except Exception as e:
                     print(f"프로세스 {proc.pid} 종료 중 오류 발생: {e}")
-        time.sleep(1)  # 30초마다 체크
+        time.sleep(0.5)  # 0.5초마다 반복
 
 def get_audio_duration(file_path):
     """
