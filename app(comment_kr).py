@@ -11,17 +11,16 @@ import os
 import urllib.parse
 from multiprocessing import Queue, Process
 import concurrent.futures
-import sts
+import sys
 app = Flask(__name__)
-app.secret_key = "qwyueyqwhuidhuwi@#&(*&!&@#*(HNCDLKJNCLK:SS!@#(*&(*!%*!@))))"  # 세션을 사용하기 위한 비밀 키 설정 에시임. 분명하게 바꾸어주어야 함. 아무도 모르는 값으로
-#이 시크릿 키는 아무도 모르는것이 자명함으로 마구 설정해도 무방.
+app.secret_key = "qwyueyqwhuidhuwi@#&(*&!&@#*(HNCDLKJNCLK:SS!@#(*&(*!%*!@))))"  # 세션을 사용하기 위한 비밀 키 설정
 # 스레드 풀 생성 (최대 10개의 스레드 사용)
 executor = concurrent.futures.ThreadPoolExecutor(max_workers=10)
 # 현재 접속자 수를 추적하기 위한 변수와 락 설정
 current_users = 0
 user_lock = threading.Lock()
 
-# 사용자 데이터 (예제용)
+# 사용자 데이터
 users = {
     "user": "12345"  # 사용자 이름과 비밀번호
 }
@@ -35,8 +34,15 @@ failed_login_attempts = {}
 last_ping_time = {}
 
 # 청크 크기 설정
-CHUNK_SIZE = 128# 64KB 단위로 데이터를 전송
+CHUNK_SIZE = 512# 64KB 단위로 데이터를 전송
 
+def is_safe_path(base_path, user_path):
+    """
+    주어진 경로가 허용된 디렉토리 내부에 있는지 확인합니다.
+    """
+    abs_base = os.path.abspath(base_path)
+    abs_path = os.path.abspath(os.path.join(base_path, user_path))
+    return abs_path.startswith(abs_base)
 
 # 오디오 파일 목록을 추출하는 함수
 def extract_audio_files(file_list_path):
@@ -48,7 +54,7 @@ def extract_audio_files(file_list_path):
             if "*file*" in line:
                 file_path = line.split("*file*")[1]
                 absolute_file_path = os.path.abspath(file_path)
-
+                
                 # UTF-8로 인코딩된 경로를 사용하여 처리
                 encoded_path = absolute_file_path.encode('utf-8').decode('utf-8')
 
@@ -73,7 +79,7 @@ def extract_audio_files(file_list_path):
 
 
 
-file_list_path = r"./audio_file_list.txt"
+file_list_path = r"C:\Users\Administrator\Desktop\개인 프로젝트3\audio_file_list.txt"
 audio_files = extract_audio_files(file_list_path)
 # 서버에서 재생 목록을 랜덤하게 섞음
 shuffled_audio_files = copy.deepcopy(audio_files)
@@ -115,7 +121,7 @@ def extract_album_cover(file_path):
             album_cover = audio.pictures[0].data
         else:
             print("앨범 커버를 찾을 수 없습니다2.")
-            image = Image.open(r"./none.png")
+            image = Image.open(r"C:\\Users\\Administrator\\Desktop\\개인 프로젝트3\\none.png")
             image_byte_array = image.save(io.BytesIO(), format="PNG")
             image.save(image_byte_array, format="PNG")
             image_byte_array.seek(0)
@@ -133,7 +139,7 @@ def extract_album_cover(file_path):
 
 @app.route("/public/none")
 def error_album_cover():
-    image = Image.open(r"./none.png")
+    image = Image.open(r"C:\\Users\\Administrator\\Desktop\\개인 프로젝트3\\none.png")
     image_byte_array = image.save(io.BytesIO(), format="PNG")
     image.save(image_byte_array, format="PNG")
     image_byte_array.seek(0)
@@ -208,9 +214,9 @@ def logout():
     flash("로그아웃되었습니다.")
     return redirect(url_for("login"))
 
-def sanitize_path(file_path):
+#def sanitize_path(file_path):
     # 경로 내의 공백이나 특수문자를 URL 인코딩 방식으로 변환
-    return urllib.parse.quote(file_path)
+#    return urllib.parse.quote(file_path)
 # 오디오 스트리밍
 # 현재 실행 중인 ffmpeg 프로세스를 추적하기 위한 전역 변수
 current_process = None
@@ -218,7 +224,7 @@ current_process = None
 import threading
 import time
 
-max_processes = sys.maxsize  # 최대 실행 가능한 프로세스 수
+max_processes = sys.maxsize # 최대 실행 가능한 프로세스 수
 process_list = []  # 프로세스 목록: [(process, last_access_time)]
 
 process_list_lock = threading.Lock()
@@ -228,21 +234,35 @@ stop_event = threading.Event()
 def manage_process_list():
     global process_list
     with process_list_lock:  # 락을 사용하여 동시성 문제 방지
-        process_list = [(proc, last_access) for proc, last_access in process_list if proc.poll() is None]
+        process_list = [(proc, last_access) for proc, last_access in process_list if proc.poll() is None] # 종료되지 않은 프로세스만 남김
+        #위 코드의 과정은 다음과 같습니다. process_list의 각 요소를 순회하면서 프로세스의 poll() 메서드를 사용하여 프로세스가 종료되었는지 확인합니다. 종료되지 않은 프로세스만 남기고 나머지는 제거합니다.
+        #proces_list에 프로세스가 들어가는 내용은 어떤 함수인지 
     print(f"현재 실행 중인 프로세스 수: {len(process_list)}")
 
-# 비활성 프로세스 종료 스레드 함수
-def terminate_inactive_processes():
+def terminate_inactive_processes_with_duration():
+    """
+    비활성 프로세스 종료 스레드 함수 (재생 시간 기준 추가).
+    """
     global process_list
-    while not stop_event.is_set():
+    while not stop_event.is_set():  # stop_event가 설정되지 않은 동안 반복
         current_time = time.time()
         with process_list_lock:
             for proc, last_access in process_list[:]:
                 try:
-                    if current_time - last_access >  2 and proc.poll() is None:
+                    # 프로세스 파일의 경로를 찾음
+                    proc_info = next((f for f in shuffled_audio_files if proc.args and f["path"] in proc.args), None)
+                    if not proc_info:
+                        continue
+
+                    file_duration = get_audio_duration(proc_info["path"])
+                    if not file_duration:
+                        continue
+
+                    # 프로세스가 재생 시간 + 0.5초를 초과했는지 확인
+                    if current_time - last_access > file_duration + 0.5 and proc.poll() is None:
                         proc.terminate()
                         try:
-                            proc.wait(timeout=2)  # 5초 대기 후 종료 확인
+                            proc.wait(timeout=1)  # 1초 대기 후 종료 확인
                             if proc.poll() is None:  # 여전히 종료되지 않았다면
                                 proc.kill()  # 강제 종료
                                 proc.wait()  # 강제 종료 후 대기
@@ -255,19 +275,44 @@ def terminate_inactive_processes():
                             process_list.remove((proc, last_access))  # 정상적으로 종료된 경우 리스트에서 제거
                 except Exception as e:
                     print(f"프로세스 {proc.pid} 종료 중 오류 발생: {e}")
-        time.sleep(30)  # 30초마다 체크
+        time.sleep(1)  # 30초마다 체크
+
+def get_audio_duration(file_path):
+    """
+    주어진 음원 파일의 재생 시간을 초 단위로 반환.
+    """
+    try:
+        audio = File(file_path)
+        if audio and audio.info:
+            return audio.info.length  # 총 길이(초)를 반환
+    except Exception as e:
+        print(f"오류 발생: {e}")
+    return None
+
 
 
 # 비활성 프로세스 종료 스레드 시작
-cleanup_thread = threading.Thread(target=terminate_inactive_processes, daemon=True)
+cleanup_thread = threading.Thread(target=terminate_inactive_processes_with_duration, daemon=True)
 cleanup_thread.start()
+
 
 @app.route("/audio/<filename>")
 def stream_audio(filename):
+    filter_string = ''  # 필터가 없을 때 기본값은 빈 문자열
+
+    selected_effects = request.args.get('effects', '')
+
+    # 음장 효과 필터 설정
+    filter_string = ''  # 필터가 없을 때 기본값은 빈 문자열
+    
+    if 'echo' in selected_effects:
+        filter_string += 'aecho=0.8:0.9:1000:0.3'  # 에코 필터 추가
+
+
     manage_process_list()  # 현재 실행 중인 프로세스 관리
     if len(process_list) >= max_processes:
         return "Maximum number of processes running. Try again later.", 429  # Too many requests
-
+    
     # 파일 정보 찾기
     file_info = next((f for f in shuffled_audio_files if os.path.basename(f["path"]) == filename), None)
     if file_info and os.path.exists(file_info["path"]):
@@ -277,7 +322,6 @@ def stream_audio(filename):
             file_path = os.path.abspath(file_info["path"])
             # 파일 확장자 추출
             file_extension = os.path.splitext(file_path)[1].lower()
-
             # 확장자에 따른 FFmpeg 명령어 설정
             if file_extension == '.aiff':
                 command = ['ffmpeg', '-i', file_path, '-map', '0:a', '-f', 'flac', '-c:a', 'flac', '-sample_fmt', 's32', '-threads', '4']
@@ -292,13 +336,17 @@ def stream_audio(filename):
                         # 음장 효과 필터가 있을 경우 명령어에 필터 추가
             else:
                 command = ['ffmpeg', '-i', file_path, '-map', '0:a', '-f', 'flac', '-c:a', 'flac', '-threads', '4']
+            # 음장 효과 필터가 있을 경우 명령어에 필터 추가
+            if filter_string:
+                command.extend(['-af', filter_string])
+
+            command.append('-')  # FFmpeg 출력 설정을 파이프로 처리
                 
             # FFmpeg 프로세스를 stdout으로 실행
             current_process = subprocess.Popen(command, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-            process_list.append((current_process, time.time()))  # 프로세스 추가
-
+            process_list.append((current_process, time.time()))  # 프로세스 추가 및 시간 기록
             try:
-                while True:
+                while True: # 데이터를 전송할 때마다 last_access 갱신
                     chunk = current_process.stdout.read(CHUNK_SIZE)
                     if not chunk:
                         break
@@ -328,12 +376,32 @@ def stream_audio(filename):
 
         return Response(generate(), mimetype="audio/flac")
 
+
+@app.route("/audio/duration/<filename>", methods=["GET"])
+def get_duration(filename):
+    """
+    특정 음원 파일의 총 길이를 반환하는 API.
+    """
+    # 파일 정보 찾기
+    file_info = next((f for f in shuffled_audio_files if os.path.basename(f["path"]) == filename), None)
+
+    if not file_info or not os.path.exists(file_info["path"]):
+        return jsonify({"error": "File not found"}), 404
+
+    # 음원 파일 길이 가져오기
+    file_duration = get_audio_duration(file_info["path"])
+    if file_duration is None:
+        return jsonify({"error": "Could not retrieve duration"}), 500
+
+    # 길이를 JSON 형식으로 반환
+    return jsonify({"filename": filename, "duration": file_duration})
+
+
     return "File not found", 404
-
-
-app.config['SESSION_COOKIE_SECURE'] = True
-app.config['SESSION_COOKIE_HTTPONLY'] = True
-
+app.config['SESSION_COOKIE_SECURE'] = True # HTTPS에서만 세션 쿠키 전송
+app.config['SESSION_COOKIE_HTTPONLY'] = True # JavaScript에서 세션 쿠키 접근 불가
+#이렇게 설정하면 세션 쿠키가 HTTPS 프로토콜을 사용하는 경우에만 전송되며, JavaScript를 통해 세션 쿠키에 접근할 수 없습니다.
+#보안적으로는 좋고, 음악 재생에는 영향을 주지 않습니다.
 if __name__ == "__main__":
     heartbeat_thread = threading.Thread(target=heartbeat_checker)
     heartbeat_thread.start()
