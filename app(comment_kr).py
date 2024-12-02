@@ -238,7 +238,7 @@ def terminate_inactive_processes():
         with process_list_lock:
             for proc, last_access in process_list[:]:
                 try:
-                    if current_time - last_access > 300 and proc.poll() is None:
+                    if current_time - last_access >  2 and proc.poll() is None:
                         proc.terminate()
                         try:
                             proc.wait(timeout=2)  # 5초 대기 후 종료 확인
