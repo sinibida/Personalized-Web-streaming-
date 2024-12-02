@@ -241,7 +241,7 @@ def terminate_inactive_processes():
                     if current_time - last_access > 300 and proc.poll() is None:
                         proc.terminate()
                         try:
-                            proc.wait(timeout=5)  # 5초 대기 후 종료 확인
+                            proc.wait(timeout=2)  # 5초 대기 후 종료 확인
                             if proc.poll() is None:  # 여전히 종료되지 않았다면
                                 proc.kill()  # 강제 종료
                                 proc.wait()  # 강제 종료 후 대기
