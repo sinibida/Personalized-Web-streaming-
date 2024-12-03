@@ -87,6 +87,16 @@ apk 파일을 삭제하고 다시 설치하면 자동재생부터 잘 재생됩�
 
  
 추가. app(comment_kr).py와 aoudio.apk파일이 업데이트 되었습니다. index.html파일이까지도 교체 해 주세요. 이제 넘어가지기는 합니다.
+
+
+bat파일이 추가되었습니다. 이제 윈도우에서 간단하게 실행할 수 있게 되었습니다.
+(전부 관리자 권한으로 실행 필요)
+1.reader.bat 을 실행해서 폴더를 하나 실행합니다.
+2.8000port.bat 으로 방화벽에서 8000번 포트를 허용합니다.
+3.requirements.bat으로 필요한 패키지를 설치합니다.
+4.Runapp.bat 으로 서버 실행 확인 후 종료
+5. 1번에서 reader.bat를 실행했을 떄 나온 audio 디렉토리(폴더)에 음원 파일을 넣고 reader.bat를 실행하면 audio_file_list.txt에 등록됩니다. (수동으로 등록해도 무방합니다.)
+6. Runapp.bat 으로 서버 실행 후 나온 ip:8000 이렇게 되어있는 주소로 접속해서 테스트
 ## Third-Party Libraries
 
 This project uses the following third-party library:
