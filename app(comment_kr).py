@@ -258,6 +258,7 @@ def terminate_inactive_processes_with_duration():
                         file_duration = get_audio_duration(proc_info["path"])
                         # file_duration 값 검증
                         if file_duration is None or not isinstance(file_duration, (float, int)):
+
                             continue
 
                         # 프로세스가 재생 시간 + 0.5초를 초과했는지 확인
@@ -280,7 +281,7 @@ def terminate_inactive_processes_with_duration():
                         print(f"프로세스 {proc.pid} 종료 중 오류 발생: {e}")
             time.sleep(0.5)  # 0.5초마다 반복
 
-@app.route("/post_audio_duration", methods=["POST"])
+
 def get_audio_duration(file_path):
     """
     주어진 음원 파일의 재생 시간을 초 단위로 반환.
@@ -288,10 +289,23 @@ def get_audio_duration(file_path):
     try:
         audio = File(file_path)
         if audio and audio.info:
-            return jsonify(audio.info.length), 200  # 재생 시간 반환
+            return audio.info.length
     except Exception as e:
         print(f"오류 발생: {e}")
-    return jsonify(None), 200  # 재생 시간 반환
+    return audio.info.length
+
+# 오디오 재생 시간 엔드포인트 추가
+@app.route("/audio/duration", methods=["POST"])
+def post_audio_duration():
+    file_path = request.form.get("file_path")
+    if not file_path:
+        return jsonify({"error": "No file path provided"}), 400
+
+    file_duration = get_audio_duration(file_path)
+    if file_duration is None:
+        return jsonify({"error": "Could not retrieve duration"}), 500
+
+    return jsonify({"duration": file_duration})
 
 
 
@@ -403,7 +417,7 @@ def get_duration(filename):
 
 
     return "File not found", 404
-app.config['SESSION_COOKIE_SECURE'] = False # HTTPS에서만 세션 쿠키 전송
+app.config['SESSION_COOKIE_SECURE'] = True # HTTPS에서만 세션 쿠키 전송
 app.config['SESSION_COOKIE_HTTPONLY'] = False # JavaScript에서 세션 쿠키 접근 불가
 #이렇게 설정하면 세션 쿠키가 HTTPS 프로토콜을 사용하는 경우에만 전송되며, JavaScript를 통해 세션 쿠키에 접근할 수 없습니다.
 #보안적으로는 좋고, 음악 재생에는 영향을 주지 않습니다.
