@@ -244,38 +244,41 @@ def terminate_inactive_processes_with_duration():
     비활성 프로세스 종료 스레드 함수 (재생 시간 기준 추가).
     """
     global process_list
-    while not stop_event.is_set():  # stop_event가 설정되지 않은 동안 반복
-        current_time = time.time()
-        with process_list_lock:
-            for proc, last_access in process_list[:]:
-                try:
-                    # 프로세스 파일의 경로를 찾음
-                    proc_info = next((f for f in shuffled_audio_files if proc.args and f["path"] in proc.args), None)
-                    if not proc_info:
-                        continue
+    with app.app_context():  # Flask 애플리케이션 컨텍스트 설정
+        while not stop_event.is_set():  # stop_event가 설정되지 않은 동안 반복
+            current_time = time.time()
+            with process_list_lock:
+                for proc, last_access in process_list[:]:
+                    try:
+                        # 프로세스 파일의 경로를 찾음
+                        proc_info = next((f for f in shuffled_audio_files if proc.args and f["path"] in proc.args), None)
+                        if not proc_info:
+                            continue
 
-                    file_duration = get_audio_duration(proc_info["path"])
-                    if not file_duration:
-                        continue
+                        file_duration = get_audio_duration(proc_info["path"])
+                        # file_duration 값 검증
+                        if file_duration is None or not isinstance(file_duration, (float, int)):
+                            continue
 
-                    # 프로세스가 재생 시간 + 0.5초를 초과했는지 확인
-                    if current_time - last_access >= file_duration and proc.poll() is None: # 끝나면 종료
-                        proc.terminate()
-                        try:
-                            proc.wait(timeout=1)  # 1초 대기 후 종료 확인
-                            if proc.poll() is None:  # 여전히 종료되지 않았다면
-                                proc.kill()  # 강제 종료
+                        # 프로세스가 재생 시간 + 0.5초를 초과했는지 확인
+                        if current_time - last_access >= file_duration + 0.5 and proc.poll() is None:
+                            proc.terminate()
+                            try:
+                                proc.wait(timeout=1)  # 1초 대기 후 종료 확인
+                                if proc.poll() is None:  # 여전히 종료되지 않았다면
+                                    proc.kill()  # 강제 종료
+                                    proc.wait()  # 강제 종료 후 대기
+                                print(f"프로세스 종료됨. PID: {proc.pid}, 종료 코드: {proc.returncode}")
+                            except subprocess.TimeoutExpired:
+                                print(f"프로세스 {proc.pid} 종료 대기 시간 초과. 강제 종료 시도.")
+                                proc.kill()  # 강제 종료 시도
                                 proc.wait()  # 강제 종료 후 대기
-                            print(f"비활성 프로세스 종료됨. 종료된 프로세스의 종료 코드: {proc.returncode}")
-                        except subprocess.TimeoutExpired:
-                            print(f"프로세스 {proc.pid} 종료 대기 시간 초과, 강제 종료 시도")
-                            proc.kill()  # 강제 종료 시도
-                            proc.wait()  # 강제 종료 후 대기
-                        finally:
-                            process_list.remove((proc, last_access))  # 정상적으로 종료된 경우 리스트에서 제거
-                except Exception as e:
-                    print(f"프로세스 {proc.pid} 종료 중 오류 발생: {e}")
-        time.sleep(0.5)  # 0.5초마다 반복
+                            finally:
+                                # 정상적으로 종료된 경우 리스트에서 제거
+                                process_list.remove((proc, last_access))
+                    except Exception as e:
+                        print(f"프로세스 {proc.pid} 종료 중 오류 발생: {e}")
+            time.sleep(0.5)  # 0.5초마다 반복
 
 @app.route("/post_audio_duration", methods=["POST"])
 def get_audio_duration(file_path):
