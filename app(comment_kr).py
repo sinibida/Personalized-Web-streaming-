@@ -245,12 +245,12 @@ def terminate_inactive_processes_with_duration():
     """
     global process_list
     while not stop_event.is_set():  # stop_event가 설정되지 않은 동안 반복
-        current_time = time.time() # 현재 시간
+        current_time = time.time()
         with process_list_lock:
-            for proc, last_access in process_list[:]: # 리스트 복사본을 사용하여 반복 
+            for proc, last_access in process_list[:]:
                 try:
                     # 프로세스 파일의 경로를 찾음
-                    proc_info = next((f for f in shuffled_audio_files if proc.args and f["path"] in proc.args), None) # 프로세스 정보 찾기
+                    proc_info = next((f for f in shuffled_audio_files if proc.args and f["path"] in proc.args), None)
                     if not proc_info:
                         continue
 
@@ -318,7 +318,8 @@ def stream_audio(filename):
     file_info = next((f for f in shuffled_audio_files if os.path.basename(f["path"]) == filename), None)
     if file_info and os.path.exists(file_info["path"]):
         print(f"Streaming file: {file_info['path']}")
-
+        # 파일의 길이 출력
+        print(f"File duration: {get_audio_duration(file_info['path'])} seconds")
         def generate():
             file_path = os.path.abspath(file_info["path"])
             # 파일 확장자 추출
@@ -399,8 +400,8 @@ def get_duration(filename):
 
 
     return "File not found", 404
-app.config['SESSION_COOKIE_SECURE'] =  False # HTTPS에서만 세션 쿠키 전송
-app.config['SESSION_COOKIE_HTTPONLY'] = True # JavaScript에서 세션 쿠키 접근 불가
+app.config['SESSION_COOKIE_SECURE'] = False # HTTPS에서만 세션 쿠키 전송
+app.config['SESSION_COOKIE_HTTPONLY'] = False # JavaScript에서 세션 쿠키 접근 불가
 #이렇게 설정하면 세션 쿠키가 HTTPS 프로토콜을 사용하는 경우에만 전송되며, JavaScript를 통해 세션 쿠키에 접근할 수 없습니다.
 #보안적으로는 좋고, 음악 재생에는 영향을 주지 않습니다.
 if __name__ == "__main__":
