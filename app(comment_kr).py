@@ -121,7 +121,7 @@ def extract_album_cover(file_path):
             album_cover = audio.pictures[0].data
         else:
             print("앨범 커버를 찾을 수 없습니다2.")
-            image = Image.open(r"C:\\Users\\Administrator\\Desktop\\개인 프로젝트3\\none.png")
+            image = Image.open(r".\none.png")
             image_byte_array = image.save(io.BytesIO(), format="PNG")
             image.save(image_byte_array, format="PNG")
             image_byte_array.seek(0)
@@ -139,7 +139,7 @@ def extract_album_cover(file_path):
 
 @app.route("/public/none")
 def error_album_cover():
-    image = Image.open(r"C:\\Users\\Administrator\\Desktop\\개인 프로젝트3\\none.png")
+    image = Image.open(r".\none.png")
     image_byte_array = image.save(io.BytesIO(), format="PNG")
     image.save(image_byte_array, format="PNG")
     image_byte_array.seek(0)
