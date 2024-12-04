@@ -27,43 +27,36 @@
 
         // 트랙 정보 업데이트
         function updateTrackInfo() {
-            const audioElement = document.getElementById('audio-player');
-            const titleElement = document.getElementById('track-title');
-            const coverElement = document.getElementById('album-cover');
-            const currentTrack = audioFiles[currentIndex];
-            const originalPath = currentTrack.path.replace(/\\/g, '/').split('/').pop();
-            const trackName = originalPath.replace(/\.[^/.]+$/, ""); // 확장자 제거
+        const audioElement = document.getElementById('audio-player');
+        const titleElement = document.getElementById('track-title');
+        const coverElement = document.getElementById('album-cover');
+        const currentTrack = audioFiles[currentIndex];
+        const originalPath = currentTrack.path.replace(/\\/g, '/').split('/').pop();
+        const trackName = originalPath.replace(/\.[^/.]+$/, ""); // 확장자 제거
 
-            titleElement.textContent = trackName;
+        titleElement.textContent = trackName;
 
-            const selectedEffects = getSelectedEffects();
-            const encodedFilename = encodeURIComponent(originalPath);
+        const selectedEffects = getSelectedEffects();
+        const encodedFilename = encodeURIComponent(originalPath);
 
-            audioElement.src = `/audio/${encodedFilename}?effects=${selectedEffects}`;
-            coverElement.src = `/cover/${encodedFilename}`;
+        audioElement.src = `/audio/${encodedFilename}?effects=${selectedEffects}`;
+        coverElement.src = `/cover/${encodedFilename}`;
 
-            coverElement.onerror = () => {
-                coverElement.src = "/public/none";
-                coverElement.onerror = null;
-            };
+        coverElement.onerror = () => {
+            coverElement.src = "/public/none";
+            coverElement.onerror = null;
+        };
 
-            audioElement.load();
-                
-            // Android 메서드 호출 - 오디오 전송
-            if (window.Android) {
-                window.Android.updateTrackInfo(trackName, coverElement.src);
-                window.Android.transferAudioData(originalPath);
+        audioElement.load();
 
-                // 재생이 끝나면 Android 메서드를 호출하여 다음 곡으로 넘기기
-                document.getElementById('audio-player').addEventListener('ended', function() {
-                    currentIndex = (currentIndex + 1) % audioFiles.length; // 순환하여 다음 곡으로 이동
-                    updateTrackInfo();
-                    window.Android.updateTrackInfo(trackName, coverElement.src);
-                    window.Android.transferAudioData(originalPath);
-                    playAudio();
+        // 오디오 로드 후 재생 가능 상태가 되면 자동 재생
+        audioElement.addEventListener('canplay', () => {
+            audioElement.play().catch(error => {
+                console.error("Playback failed:", error);
             });
-        }
-        }
+        }, { once: true }); // 한 번만 이벤트 처리
+    }
+
 
         // 선택된 효과 가져오기
         function getSelectedEffects() {
@@ -78,15 +71,15 @@
         function nextTrack() {
             currentIndex++;
             if (currentIndex >= audioFiles.length) {
-                currentIndex = 0;
+                currentIndex = 0; // 처음으로 돌아가기
             }
-            updateTrackInfo();
-            const audioElement = document.getElementById('audio-player');
-            audioElement.currentTime = 0;
+            updateTrackInfo(); // 트랙 정보 업데이트 
+            const audioElement = document.getElementById('audio-player'); // 오디오 요소 가져오기
+            audioElement.currentTime = 0; // 재생 시간 초기화
 
-            audioElement.play().catch(error => {
+            audioElement.play().catch(error => { // 오디오 재생
                 console.log("Playback failed due to user interaction requirements. Error: ", error);
-            });
+            }); // 오디오 재생 실패 시 콘솔에 오류 메시지 출력
         }
 
         // 이전 트랙
@@ -103,7 +96,7 @@
                 console.log("Playback failed due to user interaction requirements. Error: ", error);
             });
         }
-
+        // Android 메서드 호출 - 오디오 재생
         window.onload = function() {
             const audioElement = document.getElementById('audio-player');
 
@@ -112,6 +105,7 @@
                 setTimeout(() => {
                     nextTrack();
                 }, 3000);
+                audioElement.play()
             });
 
             audioElement.addEventListener('playing', () => {
@@ -120,6 +114,7 @@
 
             audioElement.addEventListener('ended', () => {
                 nextTrack();
+                audioElement.play()
             });
         };
     </script>
