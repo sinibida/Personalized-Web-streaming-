@@ -10,11 +10,7 @@
     <script>
         let audioFiles = {{ audio_files|tojson|safe }}; // JSON 형식으로 audio_files 가져옴
         let currentIndex = 0; // 현재 트랙 인덱스
-        let audioContext; // 오디오 컨텍스트
-        let analyser; // 오디오 분석기
-        // @app.route("/test_path/<path:user_path>") 사용
 
-    
         // 배열을 섞는 함수
         function shuffleArray(array) {
             for (let i = array.length - 1; i > 0; i--) {
@@ -27,36 +23,35 @@
 
         // 트랙 정보 업데이트
         function updateTrackInfo() {
-        const audioElement = document.getElementById('audio-player');
-        const titleElement = document.getElementById('track-title');
-        const coverElement = document.getElementById('album-cover');
-        const currentTrack = audioFiles[currentIndex];
-        const originalPath = currentTrack.path.replace(/\\/g, '/').split('/').pop();
-        const trackName = originalPath.replace(/\.[^/.]+$/, ""); // 확장자 제거
+            const audioElement = document.getElementById('audio-player');
+            const titleElement = document.getElementById('track-title');
+            const coverElement = document.getElementById('album-cover');
+            const currentTrack = audioFiles[currentIndex];
+            const originalPath = currentTrack.path.replace(/\\/g, '/').split('/').pop();
+            const trackName = originalPath.replace(/\.[^/.]+$/, ""); // 확장자 제거
 
-        titleElement.textContent = trackName;
+            titleElement.textContent = trackName;
 
-        const selectedEffects = getSelectedEffects();
-        const encodedFilename = encodeURIComponent(originalPath);
+            const selectedEffects = getSelectedEffects();
+            const encodedFilename = encodeURIComponent(originalPath);
 
-        audioElement.src = `/audio/${encodedFilename}?effects=${selectedEffects}`;
-        coverElement.src = `/cover/${encodedFilename}`;
+            audioElement.src = `/audio/${encodedFilename}?effects=${selectedEffects}`;
+            coverElement.src = `/cover/${encodedFilename}`;
 
-        coverElement.onerror = () => {
-            coverElement.src = "/public/none";
-            coverElement.onerror = null;
-        };
+            coverElement.onerror = () => {
+                coverElement.src = "/public/none";
+                coverElement.onerror = null;
+            };
 
-        audioElement.load();
+            audioElement.load();
 
-        // 오디오 로드 후 재생 가능 상태가 되면 자동 재생
-        audioElement.addEventListener('canplay', () => {
-            audioElement.play().catch(error => {
-                console.error("Playback failed:", error);
-            });
-        }, { once: true }); // 한 번만 이벤트 처리
-    }
-
+            // 오디오 로드 후 재생 가능 상태가 되면 자동 재생
+            audioElement.addEventListener('canplay', () => {
+                audioElement.play().catch(error => {
+                    console.error("Playback failed:", error);
+                });
+            }, { once: true }); // 한 번만 이벤트 처리
+        }
 
         // 선택된 효과 가져오기
         function getSelectedEffects() {
@@ -73,13 +68,7 @@
             if (currentIndex >= audioFiles.length) {
                 currentIndex = 0; // 처음으로 돌아가기
             }
-            updateTrackInfo(); // 트랙 정보 업데이트 
-            const audioElement = document.getElementById('audio-player'); // 오디오 요소 가져오기
-            audioElement.currentTime = 0; // 재생 시간 초기화
-
-            audioElement.play().catch(error => { // 오디오 재생
-                console.log("Playback failed due to user interaction requirements. Error: ", error);
-            }); // 오디오 재생 실패 시 콘솔에 오류 메시지 출력
+            updateTrackInfo();
         }
 
         // 이전 트랙
@@ -89,15 +78,15 @@
                 currentIndex = audioFiles.length - 1;
             }
             updateTrackInfo();
-            const audioElement = document.getElementById('audio-player');
-            audioElement.currentTime = 0;
-
-            audioElement.play().catch(error => {
-                console.log("Playback failed due to user interaction requirements. Error: ", error);
-            });
         }
-        // Android 메서드 호출 - 오디오 재생
-        window.onload = function() {
+
+        // 특정 트랙 설정
+        function setTrack(index) {
+            currentIndex = index;
+            updateTrackInfo();
+        }
+
+        window.onload = function () {
             const audioElement = document.getElementById('audio-player');
 
             audioElement.addEventListener('stalled', () => {
@@ -105,7 +94,6 @@
                 setTimeout(() => {
                     nextTrack();
                 }, 3000);
-                audioElement.play()
             });
 
             audioElement.addEventListener('playing', () => {
@@ -114,7 +102,18 @@
 
             audioElement.addEventListener('ended', () => {
                 nextTrack();
-                audioElement.play()
+            });
+
+            // 슬라이더바 동적 생성
+            const sidebar = document.querySelector(".sidebar-content");
+            audioFiles.forEach((audio, i) => {
+                const div = document.createElement('div');
+                div.onclick = () => {
+                    setTrack(i); // 클릭 시 해당 트랙 재생
+                }
+                div.textContent = audio.name; // 트랙 이름 설정
+                div.className = "sidebar-track"; // CSS 클래스 추가
+                sidebar.appendChild(div); // 슬라이더바에 추가
             });
         };
     </script>
@@ -129,16 +128,20 @@
             <div class="special-controls">
                 <h4>Select Effects:</h4>
                 <label><input type="checkbox" name="effects" value="echo"> Echo</label><br>
-                <div class="audio-container">
-                    <audio id="audio-player" controls>
-                        <source id="audio-source" src="" type="audio/flac">
-                        Your browser does not support the audio element.
-                    </audio>
-                </div>
+                <audio id="audio-player" controls>
+                    <source id="audio-source" src="" type="audio/flac">
+                    Your browser does not support the audio element.
+                </audio>
+            </div>
         
-        <div class="buttons">
-            <button onclick="previousTrack()">Previous Track</button>
-            <button onclick="nextTrack()">Next Track</button>
+            <div class="buttons">
+                <button onclick="previousTrack()">Previous Track</button>
+                <button onclick="nextTrack()">Next Track</button>
+            </div>
+        </div>
+        <div class="sidebar">
+            <div class="sidebar-content">
+            </div>
         </div>
     </div>
 </body>
