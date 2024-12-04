@@ -277,6 +277,7 @@ def terminate_inactive_processes_with_duration():
                     print(f"프로세스 {proc.pid} 종료 중 오류 발생: {e}")
         time.sleep(0.5)  # 0.5초마다 반복
 
+@app.route("/post_audio_duration", methods=["POST"])
 def get_audio_duration(file_path):
     """
     주어진 음원 파일의 재생 시간을 초 단위로 반환.
@@ -284,10 +285,10 @@ def get_audio_duration(file_path):
     try:
         audio = File(file_path)
         if audio and audio.info:
-            return audio.info.length  # 총 길이(초)를 반환
+            return jsonify(audio.info.length), 200  # 재생 시간 반환
     except Exception as e:
         print(f"오류 발생: {e}")
-    return None
+    return jsonify(None), 200  # 재생 시간 반환
 
 
 
