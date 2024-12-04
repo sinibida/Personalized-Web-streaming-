@@ -79,7 +79,7 @@ def extract_audio_files(file_list_path):
 
 
 
-file_list_path = r"C:\Users\Administrator\Desktop\개인 프로젝트3\audio_file_list.txt"
+file_list_path = r".\audio_file_list.txt"
 audio_files = extract_audio_files(file_list_path)
 # 서버에서 재생 목록을 랜덤하게 섞음
 shuffled_audio_files = copy.deepcopy(audio_files)
@@ -245,12 +245,12 @@ def terminate_inactive_processes_with_duration():
     """
     global process_list
     while not stop_event.is_set():  # stop_event가 설정되지 않은 동안 반복
-        current_time = time.time()
+        current_time = time.time() # 현재 시간
         with process_list_lock:
-            for proc, last_access in process_list[:]:
+            for proc, last_access in process_list[:]: # 리스트 복사본을 사용하여 반복 
                 try:
                     # 프로세스 파일의 경로를 찾음
-                    proc_info = next((f for f in shuffled_audio_files if proc.args and f["path"] in proc.args), None)
+                    proc_info = next((f for f in shuffled_audio_files if proc.args and f["path"] in proc.args), None) # 프로세스 정보 찾기
                     if not proc_info:
                         continue
 
@@ -398,7 +398,7 @@ def get_duration(filename):
 
 
     return "File not found", 404
-app.config['SESSION_COOKIE_SECURE'] = True # HTTPS에서만 세션 쿠키 전송
+app.config['SESSION_COOKIE_SECURE'] =  False # HTTPS에서만 세션 쿠키 전송
 app.config['SESSION_COOKIE_HTTPONLY'] = True # JavaScript에서 세션 쿠키 접근 불가
 #이렇게 설정하면 세션 쿠키가 HTTPS 프로토콜을 사용하는 경우에만 전송되며, JavaScript를 통해 세션 쿠키에 접근할 수 없습니다.
 #보안적으로는 좋고, 음악 재생에는 영향을 주지 않습니다.
