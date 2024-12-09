@@ -12,6 +12,7 @@ import urllib.parse
 from multiprocessing import Queue, Process
 import concurrent.futures
 import sys
+import argparse
 app = Flask(__name__)
 app.secret_key = "qwyueyqwhuidhuwi@#&(*&!&@#*(HNCDLKJNCLK:SS!@#(*&(*!%*!@))))"  # 세션을 사용하기 위한 비밀 키 설정
 # 스레드 풀 생성 (최대 10개의 스레드 사용)
@@ -421,7 +422,16 @@ app.config['SESSION_COOKIE_SECURE'] = False # HTTPS에서만 세션 쿠키 전�
 app.config['SESSION_COOKIE_HTTPONLY'] = True # JavaScript에서 세션 쿠키 접근 불가
 #이렇게 설정하면 세션 쿠키가 HTTPS 프로토콜을 사용하는 경우에만 전송되며, JavaScript를 통해 세션 쿠키에 접근할 수 없습니다.
 #보안적으로는 좋고, 음악 재생에는 영향을 주지 않습니다.
+
+# see: https://www.geeksforgeeks.org/command-line-arguments-in-python/
+parser = argparse.ArgumentParser()
+
+# `--debug` 추가 시 args.debug == True
+parser.add_argument("--debug", action='store_true', help = "Debug Mode")
+
+args = parser.parse_args()
+
 if __name__ == "__main__":
     heartbeat_thread = threading.Thread(target=heartbeat_checker)
     heartbeat_thread.start()
-    app.run(host="0.0.0.0", debug=False, threaded=True, port=8000)
+    app.run(host="0.0.0.0", debug=args.debug, threaded=True, port=8000)
